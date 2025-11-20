@@ -1,26 +1,63 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+  /* Vision UI Inspired Palette */
+  --background: #0B1437; /* Deep Blue Background */
+  --card-bg: #111C44;    /* Slightly lighter blue for cards */
+  --border: #2D3A5F;     /* Muted blue border */
+  --text-primary: #E0E0E0; /* Light grey for primary text */
+  --text-secondary: #99A3BA; /* Muted grey for secondary text */
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Accent Colors (Vibrant & Neon) */
+  --accent-blue: #4FD1C5; /* Teal-like blue for highlights */
+  --accent-purple: #8C52FF; /* Vibrant purple for other highlights */
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--background);
+  color: var(--text-primary);
+  font-family: var(--font-inter), sans-serif;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+
+  /* Subtle background pattern/gradient */
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(79, 209, 197, 0.1) 0%, transparent 40%),
+    linear-gradient(to bottom, rgba(255,255,255,0.01) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 40px; /* Grid effect */
+  background-attachment: fixed;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--card-bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent-blue); }
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-primary);
+}
+p, span, div {
+  color: var(--text-secondary);
+}
+
+/* Specific utilities for this theme */
+.glass-effect {
+  background-color: rgba(17, 28, 68, 0.6); /* Semi-transparent card-bg */
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(45, 58, 95, 0.3); /* Muted border */
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2); /* Deeper shadow */
+}
+
+.text-gradient-primary {
+  background: linear-gradient(to right, #4FD1C5, #6366F1); /* Teal to Blue */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-secondary {
+  background: linear-gradient(to right, #8C52FF, #EB5757); /* Purple to Red */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
