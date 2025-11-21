@@ -200,7 +200,7 @@ function ProblemRow({ problem, index }) {
     // Status Colors
     const statusColors = {
         "Solved": "text-emerald-400 bg-emerald-400/10 border-emerald-400/20",
-        "Pending": "text-slate-400 bg-slate-400/10 border-slate-400/20", // Adjusted for better contrast
+        "Pending": "text-slate-400 bg-slate-400/10 border-slate-400/20", 
         "Attempted": "text-amber-400 bg-amber-400/10 border-amber-400/20"
     };
 
@@ -211,45 +211,49 @@ function ProblemRow({ problem, index }) {
     };
 
     return (
-        <motion.div 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.05 }}
-            className="group glass-card-hover p-4 flex items-center justify-between cursor-pointer" // Increased hover effect
-        >
-            <div className="flex items-center gap-4">
-                {/* Icon Box */}
-                <div className={`w-10 h-10 rounded-lg flex items-center justify-center border ${statusColors[problem.status]}`}>
-                    {problem.status === "Solved" ? <CheckCircle2 size={18} /> : <Clock size={18} />}
-                </div>
-                
-                <div>
-                    <h4 className="text-white font-medium text-base group-hover:text-violet-400 transition-colors">{problem.title}</h4> {/* Increased text size */}
-                    <div className="flex items-center gap-2 mt-1">
-                        <span className={`text-xs font-medium ${difficultyColors[problem.difficulty]}`}>{problem.difficulty}</span>
-                        <span className="text-slate-600 text-[10px]">•</span>
-                        <span className="text-xs text-slate-400">{problem.platform}</span> {/* Adjusted for better contrast */}
+        // Wrapped the motion div with Link for full row clickability
+        <Link href={`/problem/${problem.id}`} className="block">
+            <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 }}
+                className="group glass-card-hover p-4 flex items-center justify-between cursor-pointer"
+            >
+                <div className="flex items-center gap-4">
+                    {/* Icon Box */}
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center border ${statusColors[problem.status]}`}>
+                        {problem.status === "Solved" ? <CheckCircle2 size={18} /> : <Clock size={18} />}
+                    </div>
+                    
+                    <div>
+                        <h4 className="text-white font-medium text-base group-hover:text-violet-400 transition-colors">{problem.title}</h4> 
+                        <div className="flex items-center gap-2 mt-1">
+                            <span className={`text-xs font-medium ${difficultyColors[problem.difficulty]}`}>{problem.difficulty}</span>
+                            <span className="text-slate-600 text-[10px]">•</span>
+                            <span className="text-xs text-slate-400">{problem.platform}</span> 
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            {/* Tags & Meta (Hidden on mobile) */}
-            <div className="hidden md:flex items-center gap-6">
-                <div className="flex gap-2">
-                    {problem.tags.map((tag, i) => (
-                        <span key={i} className="px-2.5 py-1 rounded text-xs font-medium bg-black/30 text-slate-300 border border-white/5 backdrop-blur-sm"> {/* Refined tag styling */}
-                            {tag}
-                        </span>
-                    ))}
+                {/* Tags & Meta (Hidden on mobile) */}
+                <div className="hidden md:flex items-center gap-6">
+                    <div className="flex gap-2">
+                        {problem.tags.map((tag, i) => (
+                            <span key={i} className="px-2.5 py-1 rounded text-xs font-medium bg-black/30 text-slate-300 border border-white/5 backdrop-blur-sm"> 
+                                {tag}
+                            </span>
+                        ))}
+                    </div>
+                    <div className="text-right w-20">
+                        <div className="text-xs text-slate-400">Acceptance</div>
+                        <div className="text-xs font-mono text-white">{problem.acceptance}</div>
+                    </div>
+                    {/* The arrow is just visual now, the whole card is a link */}
+                    <div className="p-2 bg-black/20 hover:bg-white/10 rounded-full text-slate-400 group-hover:text-white transition-colors border border-white/10"> 
+                        <ArrowRight size={16} />
+                    </div>
                 </div>
-                <div className="text-right w-20">
-                    <div className="text-xs text-slate-400">Acceptance</div>
-                    <div className="text-xs font-mono text-white">{problem.acceptance}</div>
-                </div>
-                <button className="p-2 bg-black/20 hover:bg-white/10 rounded-full text-slate-400 hover:text-white transition-colors border border-white/10"> {/* Styled button */}
-                    <ArrowRight size={16} />
-                </button>
-            </div>
-        </motion.div>
+            </motion.div>
+        </Link>
     )
 }

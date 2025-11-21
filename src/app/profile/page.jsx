@@ -14,21 +14,29 @@ import {
   Calendar,
   Edit2
 } from "lucide-react";
+// 1. Import the Shader
+import ShaderBackground from "@/components/ui/shader-background"; 
 
 export default function ProfilePage() {
   return (
-    <div className="min-h-screen pt-20 pb-20 px-4 sm:px-6">
-      <div className="max-w-6xl mx-auto space-y-8">
+    // 2. Wrapper: Set up relative positioning and overflow handling
+    <div className="relative min-h-screen pt-20 pb-20 px-4 sm:px-6 overflow-hidden text-white">
+      
+      {/* --- Background Layer --- */}
+      <ShaderBackground className="-z-20" />
+      
+      {/* Dark Overlay for readability (Matches Dashboard) */}
+      <div className="fixed inset-0 bg-black/70 -z-10 pointer-events-none" />
+
+      <div className="max-w-6xl mx-auto space-y-8 relative z-0">
         
         {/* --- 1. Profile Header --- */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
+          // Removed the local 'bg-violet' blob div that was here previously
           className="glass-card p-8 relative overflow-hidden group"
         >
-          {/* Background Gradient Blur */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-violet-600/10 blur-[80px] rounded-full -translate-y-1/2 translate-x-1/2" />
-
           <div className="relative z-10 flex flex-col md:flex-row gap-8 items-start md:items-center">
             
             {/* Avatar */}
@@ -122,24 +130,21 @@ export default function ProfilePage() {
                         <Calendar size={18} className="text-violet-400" /> 
                         Submission Activity
                     </h3>
-                    <select className="bg-[#0B1120] border border-white/10 rounded-md text-xs p-1 text-slate-400 focus:outline-none focus:border-violet-500">
+                    <select className="bg-black/30 border border-white/10 rounded-md text-xs p-1 text-slate-400 focus:outline-none focus:border-violet-500">
                         <option>2024</option>
                         <option>2023</option>
                     </select>
                 </div>
                 
-                {/* The Heatmap Grid - FIXED: Removed Math.random() */}
+                {/* The Heatmap Grid */}
                 <div className="flex flex-wrap gap-1.5">
                     {[...Array(126)].map((_, i) => {
-                        // FIX: Use a deterministic calculation based on index 'i'
-                        // This ensures the server and client generate the exact same "random" pattern
                         const val = (i * 7) % 10; 
                         
-                        let intensity = "bg-white/5"; // Default (0 subs)
-                        if (val > 8) intensity = "bg-violet-500"; // High
-                        else if (val > 5) intensity = "bg-violet-500/40"; // Medium
+                        let intensity = "bg-white/5"; 
+                        if (val > 8) intensity = "bg-violet-500"; 
+                        else if (val > 5) intensity = "bg-violet-500/40"; 
                         
-                        // Deterministic tooltip count
                         const count = val > 5 ? val : 0; 
 
                         return (

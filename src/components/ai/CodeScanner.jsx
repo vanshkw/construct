@@ -7,19 +7,29 @@ export default function CodeScanner({ isScanning }) {
   return (
     <motion.div
       // Initial state
-      initial={{ top: "0%", opacity: 0.8 }}
-      // Animation state
+      initial={{ top: "-10%", opacity: 0 }}
+      // Animation Cycle
       animate={{ 
-        top: "100%", 
-        opacity: 0 
+        top: ["0%", "100%", "0%"], 
+        opacity: [0, 1, 1, 0] // Fade in at start, stay visible, fade out at end
       }}
-      // Loop configuration
       transition={{ 
-        duration: 2, 
+        duration: 3, 
         repeat: Infinity, 
-        ease: "linear" 
+        ease: "easeInOut",
+        times: [0, 0.5, 1] // Timing distribution
       }}
-      className="absolute left-0 w-full h-[2px] bg-blue-400 shadow-[0_0_15px_rgba(96,165,250,0.8)] z-50 pointer-events-none"
-    />
+      className="absolute left-0 w-full z-50 pointer-events-none"
+    >
+      {/* 1. The Core Laser Line */}
+      <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-violet-400 to-transparent shadow-[0_0_15px_2px_rgba(139,92,246,0.6)]" />
+      
+      {/* 2. The "Light Beam" Trail (Gradient fading down) */}
+      <div className="h-20 w-full bg-gradient-to-b from-violet-500/20 to-transparent" />
+      
+      {/* 3. The "Light Beam" Reflection (Gradient fading up - creates a symmetric glow) */}
+      <div className="absolute top-[-5rem] h-20 w-full bg-gradient-to-t from-violet-500/20 to-transparent" />
+
+    </motion.div>
   );
 }

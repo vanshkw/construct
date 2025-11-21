@@ -9,17 +9,17 @@ export default function LoginPage() {
   return (
     <div className="relative min-h-screen flex items-center justify-center p-4 overflow-hidden text-slate-300">
       
-      {/* --- Background --- */}
+      {/* --- Background Layer --- */}
       <div className="fixed inset-0 z-[-1]">
         <ShaderBackground />
-        {/* Dark overlay to make form readable */}
+        {/* Dark overlay to make form readable against the shader */}
         <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px]" />
       </div>
 
-      {/* --- Back to Home --- */}
+      {/* --- Back to Home Button --- */}
       <Link 
         href="/" 
-        className="absolute top-8 left-8 flex items-center gap-2 text-sm text-slate-400 hover:text-white transition-colors group"
+        className="absolute top-8 left-8 flex items-center gap-2 text-sm text-slate-400 hover:text-white transition-colors group z-20"
       >
         <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
         Back to Home
@@ -68,10 +68,12 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Submit Button */}
-          <button type="button" className="w-full btn-primary py-3 shadow-lg shadow-violet-500/20">
-            Sign In
-          </button>
+          {/* Sign In Button */}
+          <Link href="/dashboard" className="block w-full">
+            <button type="button" className="w-full btn-primary py-3 shadow-lg shadow-violet-500/20">
+                Sign In
+            </button>
+          </Link>
 
         </form>
 
@@ -81,7 +83,7 @@ export default function LoginPage() {
             <div className="w-full border-t border-white/10"></div>
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-[#121b36] px-2 text-slate-500 rounded-full border border-white/5">Or continue with</span>
+            <span className="bg-[#0B1120] px-2 text-slate-500 rounded-full border border-white/5">Or continue with</span>
           </div>
         </div>
 
@@ -95,10 +97,10 @@ export default function LoginPage() {
           </button>
         </div>
 
-        {/* Footer */}
+        {/* Footer: Redirect to Signup */}
         <div className="mt-8 text-center text-sm text-slate-400">
           Don't have an account?{" "}
-          <Link href="/signup" className="text-violet-400 hover:text-violet-300 font-medium transition-colors">
+          <Link href="/signup" className="text-violet-400 hover:text-violet-300 font-medium transition-colors underline-offset-4 hover:underline">
             Sign up
           </Link>
         </div>
