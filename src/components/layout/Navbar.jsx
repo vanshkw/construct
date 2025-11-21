@@ -28,8 +28,6 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // --- SIMULATED AUTH STATE ---
-  // Change this to 'true' to see the Profile Icon/Energy
-  // Change this to 'false' to see the Login Button
   const isLoggedIn = false; 
 
   // Handle scroll effect for navbar background density
@@ -60,7 +58,7 @@ export default function Navbar() {
                 <div className="absolute inset-0 bg-white/20 rounded-xl blur-sm opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
               <span className="font-bold text-xl tracking-tight text-white">
-                Construct<span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400">AI</span>
+                Code<span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400">Lens</span>
               </span>
             </Link>
 
