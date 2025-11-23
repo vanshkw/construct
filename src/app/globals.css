@@ -1,4 +1,8 @@
 @import "tailwindcss";
+
+/* Note: Ensure 'tw-animate-css' is installed. 
+  If you see build errors, comment out the line below. 
+*/
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
@@ -61,10 +65,12 @@
   --sidebar-border: rgba(255, 255, 255, 0.1);
   --sidebar-ring: #8B5CF6;
 
-  /* Fonts */
+  /* Font Variables (Fallbacks included) */
   --font-inter: "Inter", sans-serif;
   --font-space: "Space Grotesk", sans-serif;
   --font-mono: "JetBrains Mono", monospace;
+  /* Ensure --font-momo has a fallback if Next.js hasn't injected it yet */
+  --font-momo: "Space Grotesk", sans-serif; 
 }
 
 /* Tailwind Theme Configuration */
@@ -107,7 +113,10 @@
   --color-sidebar-ring: var(--sidebar-ring);
 
   --font-sans: var(--font-inter);
-  --font-display: var(--font-space);
+  /* UPDATED: Mapped 'display' font directly to your custom 'Momo' font.
+     Now 'font-display' class will use your custom font automatically.
+  */
+  --font-display: var(--font-momo), sans-serif;
   --font-mono: var(--font-mono);
 
   --animate-gradient-x: gradient-x 4s ease infinite;
@@ -161,16 +170,13 @@
     @apply bg-white/5 backdrop-blur-md border border-white/10 rounded-xl shadow-xl;
   }
 
-  /* Interactive Glass Card 
-     (Duplicating styles to avoid 'unknown utility' error with @apply) 
-  */
+  /* Interactive Glass Card */
   .glass-card-hover {
     @apply bg-white/5 backdrop-blur-md border border-white/10 rounded-xl shadow-xl;
     @apply transition-all duration-300 
     hover:bg-white/10 hover:border-violet-500/30 
     hover:shadow-[0_0_30px_rgba(139,92,246,0.15)] 
     hover:-translate-y-1;
-    /* Note: cursor-pointer is removed here because we hide the cursor globally */
   }
 
   .text-gradient {
@@ -204,7 +210,7 @@
   background: #475569;
 }
 
-/* Custom Thin Scrollbar Class (Used in Chat/Workspace) */
+/* Custom Thin Scrollbar Class */
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -218,8 +224,4 @@
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.2);
-}
-
-.font-display {
-  font-family: var(--font-momo), sans-serif;
 }

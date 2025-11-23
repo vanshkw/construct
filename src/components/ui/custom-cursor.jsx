@@ -1,101 +1,146 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { motion, useMotionValue, useSpring } from "framer-motion";
-import { usePathname } from "next/navigation";
+import { useEffect, useRef } from "react";
+import { usePathname } from "next/navigation"; 
 
 export default function CustomCursor() {
-  const [isHovering, setIsHovering] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
   const pathname = usePathname();
+  const canvasRef = useRef(null);
+  const cursorRef = useRef({ x: 0, y: 0 }); 
+  const trailRef = useRef([]); 
+  const animationRef = useRef(null);
 
-  // Check if we are on the editor page to disable glow
-  const isEditorPage = pathname?.startsWith("/problem/");
-
-  // 1. Motion Values
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  // 2. Spring physics
-  const springConfig = { damping: 25, stiffness: 150 };
-  const cursorX = useSpring(mouseX, springConfig);
-  const cursorY = useSpring(mouseY, springConfig);
+  const config = {
+    color: "139, 92, 246", 
+    size: 24, 
+    trailLength: 20, 
+    decay: 0.15, 
+    lag: 0.2, 
+  };
 
   useEffect(() => {
-    const moveCursor = (e) => {
-      mouseX.set(e.clientX);
-      mouseY.set(e.clientY);
-      if (!isVisible) setIsVisible(true);
+    const isEditorPage = pathname?.startsWith("/problem/");
+    
+    // Force system cursor on editor pages
+    if (isEditorPage) {
+      const style = document.createElement("style");
+      style.id = "cursor-restore";
+      style.innerHTML = `
+        @media (pointer: fine) {
+          html, body, * { cursor: auto !important; }
+          a, button, .cursor-pointer { cursor: pointer !important; }
+        }
+      `;
+      document.head.appendChild(style);
+      return () => {
+        const existingStyle = document.getElementById("cursor-restore");
+        if (existingStyle) existingStyle.remove();
+      };
+    }
+  }, [pathname]);
+
+  useEffect(() => {
+    const isSkillsPage = pathname?.startsWith("/skills");
+    const isEditorPage = pathname?.startsWith("/problem/");
+    const isMobile = typeof navigator !== "undefined" && /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent);
+
+    if (isSkillsPage || isEditorPage || isMobile) return;
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    
+    // Handle resize
+    const handleResize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+
+    // Handle mouse
+    const handleMouseMove = (e) => {
+      cursorRef.current.x = e.clientX;
+      cursorRef.current.y = e.clientY;
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+
+    let currentHead = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+
+    const animate = () => {
+      if (!canvas) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Smooth movement
+      currentHead.x += (cursorRef.current.x - currentHead.x) * config.lag;
+      currentHead.y += (cursorRef.current.y - currentHead.y) * config.lag;
+
+      trailRef.current.push({ ...currentHead, age: 0 });
+
+      if (trailRef.current.length > config.trailLength) {
+        trailRef.current.shift();
+      }
+
+      if (trailRef.current.length > 1) {
+        ctx.beginPath();
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        
+        ctx.moveTo(trailRef.current[0].x, trailRef.current[0].y);
+        
+        for (let i = 1; i < trailRef.current.length - 1; i++) {
+          const point = trailRef.current[i];
+          const nextPoint = trailRef.current[i + 1];
+          const midX = (point.x + nextPoint.x) / 2;
+          const midY = (point.y + nextPoint.y) / 2;
+          ctx.quadraticCurveTo(point.x, point.y, midX, midY);
+        }
+        
+        const lastPoint = trailRef.current[trailRef.current.length - 1];
+        ctx.lineTo(lastPoint.x, lastPoint.y);
+
+        const gradient = ctx.createLinearGradient(
+          trailRef.current[0].x, trailRef.current[0].y, 
+          lastPoint.x, lastPoint.y
+        );
+        
+        gradient.addColorStop(0, `rgba(${config.color}, 0)`);
+        gradient.addColorStop(1, `rgba(${config.color}, 0.6)`);
+
+        ctx.strokeStyle = gradient;
+        ctx.lineWidth = config.size;
+        ctx.stroke();
+      }
+
+      // Head Dot
+      ctx.beginPath();
+      ctx.fillStyle = `rgba(255, 255, 255, 0.9)`;
+      ctx.arc(currentHead.x, currentHead.y, 6, 0, Math.PI * 2);
+      ctx.fill();
+
+      animationRef.current = requestAnimationFrame(animate);
     };
 
-    const handleMouseOver = (e) => {
-      const target = e.target;
-      // Detect interactive elements
-      const isLink =
-        target.tagName.toLowerCase() === "a" ||
-        target.tagName.toLowerCase() === "button" ||
-        target.closest("a") ||
-        target.closest("button") ||
-        target.classList.contains("glass-card-hover") ||
-        window.getComputedStyle(target).cursor === "pointer";
-
-      setIsHovering(isLink);
-    };
-
-    window.addEventListener("mousemove", moveCursor);
-    window.addEventListener("mouseover", handleMouseOver);
+    animate();
 
     return () => {
-      window.removeEventListener("mousemove", moveCursor);
-      window.removeEventListener("mouseover", handleMouseOver);
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("mousemove", handleMouseMove);
+      if (animationRef.current) cancelAnimationFrame(animationRef.current);
     };
-  }, [mouseX, mouseY, isVisible]);
+  }, [pathname]);
 
-  // Hide on mobile
-  if (typeof navigator !== "undefined" && /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {
-    return null;
-  }
+  const isSkillsPage = pathname?.startsWith("/skills");
+  const isEditorPage = pathname?.startsWith("/problem/");
+  
+  if (isSkillsPage || isEditorPage) return null;
 
   return (
-    <>
-      {/* 1. The Center Dot (Larger & Inverts colors for visibility) */}
-      <motion.div
-        className="fixed top-0 left-0 z-[9999] w-4 h-4 bg-white rounded-full pointer-events-none mix-blend-difference"
-        style={{
-          x: mouseX,
-          y: mouseY,
-          translateX: "-50%",
-          translateY: "-50%",
-          opacity: isVisible ? 1 : 0,
-        }}
-      />
-
-      {/* 2. The Trailing Ring (No Blend Mode = No Green on Purple) */}
-      <motion.div
-        className="fixed top-0 left-0 z-[9998] pointer-events-none rounded-full"
-        style={{
-          x: cursorX,
-          y: cursorY,
-          translateX: "-50%",
-          translateY: "-50%",
-          opacity: isVisible ? 1 : 0,
-          // Subtle white glow (shadow) that disappears on editor pages
-          boxShadow: !isEditorPage ? "0 0 20px rgba(255, 255, 255, 0.2)" : "none",
-        }}
-        animate={{
-          width: isHovering ? 80 : 32,
-          height: isHovering ? 80 : 32,
-          // On hover: Slight white tint. No hover: Transparent.
-          backgroundColor: isHovering ? "rgba(255, 255, 255, 0.1)" : "transparent",
-          borderWidth: isHovering ? 0 : 1.5,
-          borderColor: "rgba(255, 255, 255, 0.8)", // Crisp white border
-        }}
-        transition={{
-          type: "tween",
-          ease: "backOut",
-          duration: 0.25,
-        }}
-      />
-    </>
+    <canvas
+      ref={canvasRef}
+      className="fixed top-0 left-0 w-full h-full pointer-events-none z-[9999]"
+      // REMOVED mixBlendMode to fix visibility issues on light elements
+    />
   );
 }
